@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -18,13 +19,13 @@ public class UserController {
 
 
     @PostMapping("/add")
-    public ResponseEntity<UserDto> createUser(@RequestBody UserDto userDto){
+    public ResponseEntity<UserDto> createUser(@Valid @RequestBody UserDto userDto){
         UserDto createdUserDto = userService.createUser(userDto);
         return new ResponseEntity<>(createdUserDto, HttpStatus.CREATED);
     }
 
     @PutMapping("/update/{userId}")
-    public ResponseEntity<UserDto> updateUser(@RequestBody UserDto userDto,@PathVariable("userId") Integer uid){
+    public ResponseEntity<UserDto> updateUser(@Valid @RequestBody UserDto userDto,@PathVariable("userId") Integer uid){
         UserDto updatedUser = userService.updateUser(userDto,uid);
         return new ResponseEntity<>(updatedUser, HttpStatus.OK);
     }
@@ -32,7 +33,7 @@ public class UserController {
     @DeleteMapping("/delete/{userId}")
     public ResponseEntity<ApiResponse> deleteUser(@PathVariable("userId") Integer uid){
         userService.deleteUser(uid);
-        return new ResponseEntity(new ApiResponse("User Deleted Successfully.", true),HttpStatus.OK);
+        return new ResponseEntity(new ApiResponse("Category Deleted Successfully.", true),HttpStatus.OK);
     }
 
     @GetMapping("/list")
