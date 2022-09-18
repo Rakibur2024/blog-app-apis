@@ -31,7 +31,7 @@ public class Post {
     private Date addedDate;
 
     @ManyToOne
-    @JoinColumn(name = "category_id")
+    @JoinColumn(name = "category_id") //setting the name of the joining column
     private Category category;
 
     @ManyToOne
