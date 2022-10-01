@@ -2,6 +2,7 @@ package com.springboot.blog.blog.services;
 
 import com.springboot.blog.blog.entities.Post;
 import com.springboot.blog.blog.payloads.PostDto;
+import com.springboot.blog.blog.payloads.PostResponse;
 
 import java.util.List;
 
@@ -10,13 +11,13 @@ public interface PostService {
     PostDto createPost(PostDto postDto, Integer userId, Integer categoryId);
 
     //update
-    Post updatePost(PostDto postDto, Integer postId);
+    PostDto updatePost(PostDto postDto, Integer postId);
 
     //delete
     void deletePost(Integer postId);
 
     //get all posts
-    List<PostDto> getAllPost();
+    PostResponse getAllPost(Integer pageNumber, Integer pageSize,String sortBy,String sortDir);
 
     //get post by id
     PostDto getPostById(Integer postId);
@@ -28,5 +29,5 @@ public interface PostService {
     List<PostDto> getPostsByUser(Integer userId);
 
     //search post
-    List<Post> searchPosts(String keyword);
+    List<PostDto> searchPosts(String keyword);
 }

@@ -5,12 +5,17 @@ import com.springboot.blog.blog.entities.Post;
 import com.springboot.blog.blog.entities.User;
 import com.springboot.blog.blog.exceptions.ResourceNotFoundException;
 import com.springboot.blog.blog.payloads.PostDto;
+import com.springboot.blog.blog.payloads.PostResponse;
 import com.springboot.blog.blog.repositories.CategoryRepo;
 import com.springboot.blog.blog.repositories.PostRepo;
 import com.springboot.blog.blog.repositories.UserRepo;
 import com.springboot.blog.blog.services.PostService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -50,20 +55,47 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Post updatePost(PostDto postDto, Integer postId) {
-        return null;
+    public PostDto updatePost(PostDto postDto, Integer postId) {
+        Post post = postRepo.findById(postId).orElseThrow(()-> new ResourceNotFoundException("Post","Id",postId));
+
+        post.setTitle(postDto.getTitle());
+        post.setContent(postDto.getContent());
+        post.setImageName(postDto.getImageName());
+        Post updatedPost = postRepo.save(post);
+        return modelMapper.map(updatedPost, PostDto.class);
     }
 
     @Override
     public void deletePost(Integer postId) {
-
+        Post post = postRepo.findById(postId).orElseThrow(()-> new ResourceNotFoundException("Post","Id",postId));
+        postRepo.delete(post);
     }
 
     @Override
-    public List<PostDto> getAllPost() {
-        List<Post> posts = postRepo.findAll();
+    public PostResponse getAllPost(Integer pageNumber, Integer pageSize,String sortBy,String sortDir) {
+
+        Sort sort = null;
+        if(sortDir.equalsIgnoreCase("asc")){
+            sort = Sort.by(sortBy).ascending();
+        } else {
+            sort = Sort.by(sortBy).descending();
+        }
+
+        Pageable p = PageRequest.of(pageNumber,pageSize, sort);
+        Page<Post> pagePost = postRepo.findAll(p);
+        List<Post> posts = pagePost.getContent();
+
         List<PostDto> postDtos = posts.stream().map((post)-> modelMapper.map(post,PostDto.class)).collect(Collectors.toList());
-        return postDtos;
+
+        PostResponse postResponse = new PostResponse();
+        postResponse.setContent(postDtos);
+        postResponse.setPageNumber(pagePost.getNumber()); // getting page number
+        postResponse.setPageSize(pagePost.getSize());
+        postResponse.setTotalElements(pagePost.getTotalElements());
+        postResponse.setTotalPages(pagePost.getTotalPages());
+        postResponse.setLastPage(pagePost.isLast());
+
+        return postResponse;
     }
 
     @Override
@@ -93,7 +125,9 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<Post> searchPosts(String keyword) {
-        return null;
+    public List<PostDto> searchPosts(String keyword) {
+        List<Post> posts = postRepo.findByTitleContaining(keyword);
+        List<PostDto> postDtos = posts.stream().map((post)-> modelMapper.map(post,PostDto.class)).collect(Collectors.toList());
+        return postDtos;
     }
 }
