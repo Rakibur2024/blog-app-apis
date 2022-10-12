@@ -2,6 +2,7 @@ package com.springboot.blog.blog.payloads;
 
 
 import com.springboot.blog.blog.entities.Category;
+import com.springboot.blog.blog.entities.Comment;
 import com.springboot.blog.blog.entities.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,6 +10,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,4 +25,5 @@ public class PostDto {
     private Date addedDate;
     private CategoryDto category;
     private UserDto user;
+    private Set<CommentDto> comments = new HashSet<>();
 }
